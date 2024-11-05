@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Socket.IO Client</title>
+    <!-- Thêm thư viện Socket.IO client -->
+    <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+</head>
+<body>
+    <h2>Socket.IO Client</h2>
+    <div id="status">Đang kết nối...</div>
+    <div id="messages"></div>
+
+    <input type="text" id="messageInput" placeholder="Nhập tin nhắn..." />
+    <button onclick="sendMessage()">Gửi tin nhắn</button>
+
+    <script>
+        // Kết nối đến server với Socket.IO
+        const socket = io.connect();
+
+        // Khi kết nối thành công
+        socket.on("connect", () => {
+            document.getElementById("status").innerText = "Đã kết nối!";
+            console.log("Socket.IO đã kết nối.");
+        });
+
+        // Khi nhận được tin nhắn từ server
+        socket.on("alert", (data) => {
+            const messagesDiv = document.getElementById("messages");
+            const newMessage = document.createElement("p");
+            newMessage.innerText = data;
+            messagesDiv.appendChild(newMessage);
+        });
+
+        // Khi xảy ra lỗi
+        socket.on("connect_error", (error) => {
+            console.error("Lỗi kết nối:", error);
+            document.getElementById("status").innerText = "Lỗi kết nối!";
+        });
+
+        // Khi kết nối đóng
+        socket.on("disconnect", () => {
+            document.getElementById("status").innerText = "Đã ngắt kết nối!";
+            console.log("Socket.IO đã đóng.");
+        });
+
+        // Hàm gửi tin nhắn từ ô nhập liệu
+        function sendMessage() {
+            const messageInput = document.getElementById("messageInput");
+            const message = messageInput.value;
+            if (message) {
+                socket.emit("message", message); // Gửi tin nhắn đến server
+                console.log(`Đã gửi: ${message}`);
+            } else {
+                alert("Vui lòng nhập tin nhắn để gửi!");
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Display</title>
+    <!-- Thêm thư viện Socket.IO client -->
+    <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 100;
+            padding: 10px;
+        }
+        h1 {
+            text-align: center;
+            color: #555c3e;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin: 0 auto;
+            background-color: #fff;
+        }
+        th, td {
+            padding: 15px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background-color: #487d62;
+            color: #fff;
+            text-transform: uppercase;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            overflow-x: auto;
+            border-radius: 8px;
+            padding: 10px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Data from MQTT</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>Latitude</th>
+                    <th>Longitude</th>
+                    <th>Accel X</th>
+                    <th>Accel Y</th>
+                    <th>Accel Z</th>
+                    <th>Gyro X</th>
+                    <th>Gyro Y</th>
+                    <th>Gyro Z</th>
+                    <th>Timestamp</th>
+                </tr>
+            </thead>
+            <tbody id="data-table"></tbody>
+        </table>
+    </div>
+
+    <script>
+        let socket; // Định nghĩa biến socket
+
+        // Lắng nghe sự kiện 'ngrokUrl' để kết nối đến WebSocket với URL ngrok
+        socket = io(); // Kết nối đến WebSocket server
+
+        socket.on('ngrokUrl', (ngrokUrl) => {
+            // Kết nối lại đến WebSocket với URL ngrok
+            const socketNgrok = io(ngrokUrl);
+            
+            // Lắng nghe sự kiện 'newData' trên socketNgrok
+            socketNgrok.on('newData', (data) => {
+                
+                // Tạo một hàng mới trong bảng
+                const table = document.getElementById('data-table');
+                const newRow = table.insertRow();
+                
+                newRow.innerHTML = `
+                    <td>${data.latitude !== null ? data.latitude : 'N/A'}</td>
+                    <td>${data.longitude !== null ? data.longitude : 'N/A'}</td>
+                    <td>${data.accelX !== null ? data.accelX : 'N/A'}</td>
+                    <td>${data.accelY !== null ? data.accelY : 'N/A'}</td>
+                    <td>${data.accelZ !== null ? data.accelZ : 'N/A'}</td>
+                    <td>${data.gyroX !== null ? data.gyroX : 'N/A'}</td>
+                    <td>${data.gyroY !== null ? data.gyroY : 'N/A'}</td>
+                    <td>${data.gyroZ !== null ? data.gyroZ : 'N/A'}</td>
+                    <td>${data.timestamp !== null ? data.timestamp : 'N/A'}</td>
+                `;
+            });
+        });
+    </script>
+</body>
+</html>

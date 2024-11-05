@@ -1,0 +1,60 @@
+nodejs- platform (js)
+express- framework
+    Routing (Điều hướng): Express cho phép bạn xác định các tuyến (route) để xử lý các yêu cầu HTTP như GET, POST, PUT, DELETE, v.v.
+    Middleware: Express sử dụng khái niệm middleware để xử lý các yêu cầu giữa request và response, giúp bạn kiểm tra, lọc dữ liệu, và thêm các chức năng vào chuỗi xử lý.
+    Quản lý template engine: Express hỗ trợ nhiều template engine như EJS, Pug, Handlebars, giúp bạn dễ dàng render HTML từ server.
+    Xử lý dữ liệu yêu cầu: Express giúp bạn dễ dàng phân tích cú pháp và xử lý dữ liệu được gửi từ client thông qua các yêu cầu HTTP (ví dụ: xử lý dữ liệu form). 
+
+ejs- template engine: cho phép render các trang web bằng cách kết hợp dữ liệu từ phía server với mã HTML.
+
+dotenv- lưu trữ pass, APIkeys
+    Khai báo trong file js: require('dotenv').config();
+
+app là biến mà bạn dùng để lưu trữ đối tượng ứng dụng Express được khởi tạo từ hàm express(). 
+    Tất cả các hành động bạn thực hiện trong ứng dụng web, chẳng hạn như thiết lập route, middleware, và lắng nghe các kết nối HTTP, đều được thực hiện thông qua biến app này.
+
+Các sự kiện trong mqtt: 
+    connect: Được phát ra khi client kết nối thành công với broker.
+    message: Được phát ra khi một tin nhắn được nhận từ broker.
+    error: Được phát ra khi có lỗi xảy ra (kết nối, gửi/nhận tin nhắn, v.v.).
+    close: Được phát ra khi kết nối bị đóng.
+    reconnect: Được phát ra khi client cố gắng kết nối lại sau khi mất kết nối.
+
+Cú pháp { ...data, ...newData } sử dụng spread operator để sao chép các thuộc tính từ hai đối tượng:
+
+
+// Export thông số toạ độ để sử dụng
+const { EventEmitter } = require('events');// Hàm lắng nghe mỗi khi update dữ liệu mới
+const {getData} = require('../mqtt/data');// Gọi hàm get Data
+const eventEmitter = require('../mqtt/mqtt'); // Import eventEmitter từ mqtt.js
+let latitude,longitude;
+// Lắng nghe sự kiện 'dataUpdated' khi dữ liệu được cập nhật
+eventEmitter.on('dataUpdated', () => {
+    const currentData = getData();
+    latitude = currentData['latitude'];
+    longitude = currentData['longitude'];
+
+    //if... send to mobile
+});
+
+
+trình tự:
+    app listening
+    khởi tạo socket.io lắng nghe mobile app
+    connect firebase
+    connect mqtt
+    nhận dữ liệu từ mqtt
+    khi nhận được dữ liệu thì sẽ ghi vào file json rồi update vào firestore, đồng thời cập nhật vào file data.js để các file khác sử dụng
+    khi mobile: ON thì lưu toạ độ gốc rồi tính khoảng cách
+    khi mobile: OFF thì huỷ toạ độ gốc và không tính khoảng cách nữa
+
+
+ngrok http http://127.0.0.1:9000
+
+
+khởi tạo socket
+xuất biến io: 
+    module.exports = { createSocketServer, getIo: () => io }; // Xuất hàm tạo server
+khai báo và sử dụng io trong file khác
+    const { getIo }= require('../socket/socketServer'); // Import WebSocket server
+    const io = getIo(); // Lấy đối tượng io
