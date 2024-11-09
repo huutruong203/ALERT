@@ -1,15 +1,15 @@
 const { getData } = require('../mqtt/data'); // Hàm getData để lấy dữ liệu mới
 const eventEmitter = require('../mqtt/mqttServer'); // Import eventEmitter từ mqtt.js
-const { getIo }= require('../socket/socketServer'); // Import WebSocket server
-const io = getIo(); // Lấy đối tượng io
+const { getIo } = require('./socketServer');
+
+const io = getIo();
 
 let latitude, longitude;
 let initialLatitude = null;
 let initialLongitude = null;
 let initialSet = false; // Cờ để kiểm tra xem tọa độ ban đầu đã được thiết lập chưa
 
-
-const toRad = angle => angle * (Math.PI / 180);// Đổi từ độ sang radian
+const toRad = angle => angle * (Math.PI / 180); // Đổi từ độ sang radian
 
 // Hàm tính khoảng cách Haversine
 const haversine = (lat1, lon1, lat2, lon2) => {
@@ -26,20 +26,20 @@ const haversine = (lat1, lon1, lat2, lon2) => {
     return R * c;
 };
 
+// Hàm cắt chuỗi tọa độ chỉ lấy 5 chữ số sau dấu phẩy
+const fixCoordinate = coord => parseFloat(coord.toString().substring(0, coord.toString().indexOf('.') + 6));
+
 // Hàm cập nhật tọa độ mốc
 const updateInitialCoordinates = (lat, lon, isOn) => {
     if (isOn) {
-        initialLatitude = lat; // Cập nhật tọa độ mốc
-        initialLongitude = lon;
-        initialSet = true; // Đánh dấu tọa độ mốc đã được thiết lập
-        if (lat != null && lon != null){
-            console.log('Toạ độ mốc đã được thiết lập:', initialLatitude, initialLongitude);
-        }
-
+        initialLatitude = fixCoordinate(lat); // Lấy 5 chữ số sau dấu phẩy cho tọa độ mốc
+        initialLongitude = fixCoordinate(lon);
+        initialSet = true;
+        console.log('Toạ độ mốc đã được thiết lập:', initialLatitude, initialLongitude);
     } else {
-        initialLatitude = null; // Huỷ tọa độ mốc
+        initialLatitude = null;
         initialLongitude = null;
-        initialSet = false; // Đánh dấu tọa độ mốc đã bị huỷ
+        initialSet = false;
         console.log('Đã huỷ toạ độ mốc');
     }
 };
@@ -47,30 +47,34 @@ const updateInitialCoordinates = (lat, lon, isOn) => {
 // Lắng nghe sự kiện 'dataUpdated' khi dữ liệu được cập nhật
 eventEmitter.on('dataUpdated', () => {
     const currentData = getData();
-    latitude = currentData['latitude'];
-    longitude = currentData['longitude'];
-    console.log('Toạ độ :', latitude, longitude);
+    latitude = fixCoordinate(currentData['latitude']); // Lấy 5 chữ số sau dấu phẩy cho tọa độ hiện tại
+    longitude = fixCoordinate(currentData['longitude']);
+    console.log('Toạ độ:', latitude, longitude);
+    io.emit('GPS_1', { latitude, longitude });
 
     // Chỉ tính khoảng cách khi tọa độ mốc đã được thiết lập
     if (initialSet) {
-        if (initialLatitude!= null && initialLongitude!= null && latitude!=null && longitude!=null){
+        if (initialLatitude != null && initialLongitude != null && latitude != null && longitude != null) {
             // Tính khoảng cách từ vị trí hiện tại đến tọa độ ban đầu
             const distance = haversine(initialLatitude, initialLongitude, latitude, longitude);
-            console.log('Khoảng cách :', distance.toFixed(3), 'meters');
+            console.log('Khoảng cách:', distance.toFixed(3), 'meters');
 
             // Kiểm tra nếu khoảng cách lớn hơn một ngưỡng và thực hiện hành động cần thiết
             const threshold = 10; // ví dụ ngưỡng là 10 mét
             if (distance > threshold) {
                 console.log('CẢNH BÁO !!!');
-                io.emit('alert','CẢNH BÁO !!!');
-            }
-            else {
+                io.emit('GPS_2', {
+                    message: 'GPS_WARNING',
+                    distance: distance.toFixed(3)})
+            } else {
                 console.log('AN TOÀN !!!');
-                io.emit('alert','AN TOÀN !!!');
+                io.emit('GPS_2', {
+                    message: 'GPS_SAFE',
+                    distance: distance.toFixed(3)})
             }
-        }
-        else {
+        } else {
             console.log('Chưa nhận được toạ độ');
+            io.emit('alert','GPS_UNDEFINED')
         }
     }
 });

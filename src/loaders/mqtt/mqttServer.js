@@ -72,7 +72,7 @@ client.on('message', function (topic, message) {
 
         // Cập nhật dữ liệu
         updateData(jsonData);
-
+        
         eventEmitter.emit('dataUpdated'); // Phát ra sự kiện dataUpdated
         const userRef = db.collection('data').doc("data_doc"); // Đường dẫn đến collection 'data' và document 'data_doc'
         
@@ -85,6 +85,10 @@ client.on('message', function (topic, message) {
                 console.error('Error updating data in Firestore: ', error);
             });
     }
+
+    // if (topic === 'esp32/mpu'){
+        
+    // }
 });
 
 module.exports = eventEmitter; // Xuất eventEmitter lắng nghe sự kiện thay đổi data

@@ -1,5 +1,5 @@
 function subscribe(client) {
-    client.subscribe(['esp32/testMH', 'DEVICE'], function (err) {
+    client.subscribe(['esp32/testMH', 'esp32/mpu'], function (err) {
         if (err) {
             console.log('Subscription error:', err);
         } else {

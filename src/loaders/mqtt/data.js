@@ -10,10 +10,10 @@ let data = {
     gyroZ: null,
 };
 
-//{ ...data, ...newData } sử dụng spread operator để sao chép các thuộc tính từ hai đối tượng:
 function updateData(newData) {
-    data = { ...data, ...newData }; // Cập nhật dữ liệu
+    data = { ...data, ...newData }; // Cập nhật dữ liệu mới vào data
 }
+
 
 function getData() {
     return data; // Trả về dữ liệu hiện tại
