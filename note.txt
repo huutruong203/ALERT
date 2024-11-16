@@ -58,3 +58,13 @@ xuất biến io:
 khai báo và sử dụng io trong file khác
     const { getIo }= require('../socket/socketServer'); // Import WebSocket server
     const io = getIo(); // Lấy đối tượng io
+
+WEB_SOCKET:
+    TOPIC:
+        MPU_1: Gửi tín hiệu tai nạn
+        GPS_1: Gửi dữ liệu toạ độ cho client trong trạng thái bình thường (hiển thị gg map trên app)
+        GPS_2: Gửi dữ liệu toạ độ cho client khi nhận được tin nhắn ON/OFF (Chống trộm)
+    MESSAGE:
+        MPU_WARNING: Thông báo có tai nạn <TOPIC: MPU_1>
+        GPS_WARNING: Thông báo mất trộm <TOPIC GPS_2>
+        GPS_SAFE: Thông báo không mất trộm <TOPIC GPS_2>

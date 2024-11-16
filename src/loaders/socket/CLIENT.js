@@ -2,7 +2,7 @@ const io = require('socket.io-client');
 const readline = require('readline');
 
 // Kết nối đến server Socket.IO
-const socket = io('https://7603-42-119-95-204.ngrok-free.app');
+const socket = io('https://53f5-113-23-6-136.ngrok-free.app');
 
 // Lắng nghe sự kiện 'connect'
 socket.on('connect', () => {

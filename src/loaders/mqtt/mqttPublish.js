@@ -1,13 +1,11 @@
+// function publish(topic, message) {
+//     client.publish(topic, message, { qos: 1 }, (err) => {
+//         if (err) {
+//             console.error('Failed to publish message:', err);
+//         } else {
+//             console.log(`Message published to ${topic}: ${message}`);
+//         }
+//     });
+// }
 
-
-function publish(client) {
-    client.publish('esp32/client', 'END', function (err) {
-        if (err) {
-            console.log('Publish error:', err);
-        } else {
-            console.log(`Message published to MQTT!`);
-        }
-    });
-}
-
-module.exports = publish; // Xuất hàm publish
+// module.exports = publish; // Xuất hàm publish

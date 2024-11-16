@@ -1,7 +1,6 @@
 const { getData } = require('../mqtt/data'); // Hàm getData để lấy dữ liệu mới
-const eventEmitter = require('../mqtt/mqttServer'); // Import eventEmitter từ mqtt.js
+const { eventEmitter, publishMessage } = require('../mqtt/mqttServer'); // Import eventEmitter từ mqtt.js
 const { getIo } = require('./socketServer');
-
 const io = getIo();
 
 let latitude, longitude;
@@ -60,12 +59,13 @@ eventEmitter.on('dataUpdated', () => {
             console.log('Khoảng cách:', distance.toFixed(3), 'meters');
 
             // Kiểm tra nếu khoảng cách lớn hơn một ngưỡng và thực hiện hành động cần thiết
-            const threshold = 10; // ví dụ ngưỡng là 10 mét
+            const threshold = 30; // ví dụ ngưỡng là 30 mét
             if (distance > threshold) {
                 console.log('CẢNH BÁO !!!');
                 io.emit('GPS_2', {
                     message: 'GPS_WARNING',
-                    distance: distance.toFixed(3)})
+                    distance: distance.toFixed(3)});
+                publishMessage("esp32/clientMH",'GPS_WARNING');
             } else {
                 console.log('AN TOÀN !!!');
                 io.emit('GPS_2', {

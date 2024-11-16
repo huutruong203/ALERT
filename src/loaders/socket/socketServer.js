@@ -1,5 +1,5 @@
 const { getData } = require('../mqtt/data');
-const eventEmitter = require('../mqtt/mqttServer');
+const { eventEmitter } = require('../mqtt/mqttServer');
 const http = require('http');
 const { Server } = require('socket.io');
 require('dotenv').config();
