@@ -13,6 +13,7 @@ const db = admin.firestore();
 console.log('Firebase Connected!');
 module.exports = db; // Xuất db để sử dụng trong các file khác
 
+
 // // Ghi dữ liệu vào Firestore
 // async function main() {
 //   try {

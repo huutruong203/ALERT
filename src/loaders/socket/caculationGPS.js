@@ -1,5 +1,5 @@
 const { getData } = require('../mqtt/data'); // Hàm getData để lấy dữ liệu mới
-const { eventEmitter, publishMessage } = require('../mqtt/mqttServer'); // Import eventEmitter từ mqtt.js
+const { eventEmitter, mqttFunctions } = require('../mqtt/mqttServer'); // Import eventEmitter từ mqtt.js
 const { getIo } = require('./socketServer');
 const io = getIo();
 
@@ -65,7 +65,7 @@ eventEmitter.on('dataUpdated', () => {
                 io.emit('GPS_2', {
                     message: 'GPS_WARNING',
                     distance: distance.toFixed(3)});
-                publishMessage("esp32/clientMH",'GPS_WARNING');
+                    mqttFunctions.publish("esp32/clientMH",'GPS_WARNING');
             } else {
                 console.log('AN TOÀN !!!');
                 io.emit('GPS_2', {

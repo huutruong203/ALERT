@@ -4,7 +4,6 @@ const db = require('../firebase/firebase'); // Nhập db từ file firebase.js
 const { updateData } = require('./data'); // Nhập hàm cập nhật từ data.js
 const { EventEmitter } = require('events'); // Hàm lắng nghe mỗi khi update dữ liệu mới
 const subscribe = require('../mqtt/mqttSubcribe'); // Nhập hàm subscribe
-const { hostname } = require('os');
 require('dotenv').config(); // Khai báo để sử dụng biến trong env
 
 const eventEmitter = new EventEmitter();
@@ -28,24 +27,32 @@ var options = {
 
 // Tạo một instance client MQTT mới và kết nối đến broker
 var client = mqtt.connect(options);
+exports.client = client;
 
 // Khởi tạo biến toàn cục
 let latitude, longitude, accelX, accelY, accelZ, gyroX, gyroY, gyroZ;
+let mqttFunctions = {};
 
-
+// Khi kết nối thành công với broker
 client.on('connect', function () {
+    console.log('Successfully connected to MQTT broker');
     subscribe(client); // Gọi hàm subscribe khi kết nối
-});
 
-function publishMessage(topic, message) {
-    client.publish(topic, message, { qos: 0 }, (err) => {
-        if (err) {
-            console.error('Failed to publish message:', err);
+    // Hàm publishMessage
+    mqttFunctions.publish = function (topic, message) {
+        if (client.connected) {
+            client.publish(topic, message, { qos: 0 }, (err) => {
+                if (err) {
+                    console.error('Failed to publish message:', err);
+                } else {
+                    console.log(`Message published to ${topic}: ${message}`);
+                }
+            });
         } else {
-            console.log(`Message published to ${topic}: ${message}`);
+            console.error('MQTT client not connected. Message not sent.');
         }
-    });
-}
+    };
+});
 
 client.on('message', function (topic, message, packet) {
 
@@ -60,7 +67,7 @@ client.on('message', function (topic, message, packet) {
         const data = JSON.parse(message.toString()); // Phân tích dữ liệu JSON từ ESP
 
         // Tạo mảng chứa tên thuộc tính
-        const keys = ['Latitude', 'Longitude', 'Accel X', 'Accel Y', 'Accel Z', 'Gyro X', 'Gyro Y', 'Gyro Z'];
+        const keys = ['Latitude', 'Longitude', 'AccX', 'AccY', 'AccZ', 'AngleX', 'AngleY', 'AngleZ'];
         const values = [latitude, longitude, accelX, accelY, accelZ, gyroX, gyroY, gyroZ];
 
         // Cập nhật biến toàn cục và chỉ gán null nếu key không tồn tại hoặc là undefined
@@ -117,4 +124,4 @@ client.on('message', function (topic, message, packet) {
     }
 });
 
-module.exports = { eventEmitter, publishMessage }; // Xuất eventEmitter lắng nghe sự kiện thay đổi data
+module.exports = { eventEmitter, mqttFunctions }; // Xuất eventEmitter lắng nghe sự kiện thay đổi data
