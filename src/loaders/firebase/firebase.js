@@ -1,11 +1,11 @@
 //Firebase admin SDK
 var admin = require("firebase-admin");
 
-var serviceAccount = require("./device-231e7-firebase-adminsdk-lunv4-c2d37d0b6e.json");
+var serviceAccount = require("./apptrackcar-firebase-adminsdk-3eigf-bb870c3cf6.json");
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  databaseURL: "https://device-231e7-default-rtdb.asia-southeast1.firebasedatabase.app"
+  // databaseURL: "https://device-231e7-default-rtdb.asia-southeast1.firebasedatabase.app"
 });
 
 

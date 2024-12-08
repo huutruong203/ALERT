@@ -1,10 +1,10 @@
 const io = require('socket.io-client');
 const readline = require('readline');
-const { eventEmitter, mqttFunctions } = require('../mqtt/mqttServer'); // Import eventEmitter từ mqtt.js
+const { mqttFunctions } = require('../mqtt/mqttServer'); // Import eventEmitter từ mqtt.js
 
 
 // Kết nối đến server Socket.IO
-const socket = io('https://05b1-1-55-109-61.ngrok-free.app');
+const socket = io('https://e843-113-23-52-159.ngrok-free.app');
 
 // Lắng nghe sự kiện 'connect'
 socket.on('connect', () => {
@@ -26,8 +26,9 @@ socket.on('connect', () => {
             }
             // Gửi tin nhắn đến server
             socket.emit('message', msg);
-            console.log('Tin nhắn đã gửi:', msg);
+
             if (msg && msg.trim() !== "" ) {
+                console.log('Tin nhắn đã gửi:', msg);
                 mqttFunctions.publish('esp32/clientMH', msg);
             } else {
                 console.error('Hãy nhập tin nhắn !!!');
